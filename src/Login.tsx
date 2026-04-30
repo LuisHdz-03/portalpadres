@@ -1,35 +1,58 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { loginPadreAPI } from "./api/portal"; // Importamos la conexión
 import "./Login.css";
-import logo from "./assets/logoCETIS.png";
 
 export default function Login() {
-  const [clave, setClave] = useState(""); // Solo guardamos la clave única
+  const [clave, setClave] = useState("");
+  const [errorTexto, setErrorTexto] = useState(""); // Para mostrar errores
+  const [cargando, setCargando] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorTexto("");
 
-    // Validamos únicamente que la clave no esté vacía
     if (clave.trim() !== "") {
-      localStorage.setItem("autenticado", "1");
+      setCargando(true);
+      try {
+        // Hacemos la petición al backend real
+        const data = await loginPadreAPI(clave.trim());
 
-      // Opcional: Puedes guardar la clave por si la necesitas en el Dashboard
-      // localStorage.setItem("clave_alumno", clave);
+        // Si sale bien, guardamos el token y los datos del alumno
+        localStorage.setItem("autenticado", "1");
+        localStorage.setItem("tokenPadre", data.token);
+        localStorage.setItem("alumnoData", JSON.stringify(data.alumno));
 
-      navigate("/app", { replace: true });
+        navigate("/app", { replace: true });
+      } catch (error: any) {
+        // Si el backend dice que la clave no existe, mostramos el error
+        setErrorTexto(error.message);
+      } finally {
+        setCargando(false);
+      }
     } else {
-      alert("Por favor, ingresa la clave del alumno");
+      setErrorTexto("Por favor, ingresa la clave del alumno");
     }
   };
 
   return (
     <div className="login-bg">
       <form className="login-form" onSubmit={handleLogin}>
-        {/* Etiqueta para el logo. Si usas el import de arriba, cambia la ruta estática por {logoCetis} */}
-        <img src={logo} alt="Logo Institucional" className="login-logo" />
+        <img
+          src="../src/assets/logoCetis.png"
+          alt="Logo Institucional"
+          className="login-logo"
+        />
 
-        <h2>Portal CETIS No. 27</h2>
+        <h2>Portal de Padres</h2>
+
+        {/* Mostramos errores en pantalla si los hay */}
+        {errorTexto && (
+          <p style={{ color: "red", fontSize: "0.9rem", marginBottom: "10px" }}>
+            {errorTexto}
+          </p>
+        )}
 
         <input
           type="text"
@@ -37,9 +60,12 @@ export default function Login() {
           required
           value={clave}
           onChange={(e) => setClave(e.target.value)}
+          disabled={cargando}
         />
 
-        <button type="submit">Entrar</button>
+        <button type="submit" disabled={cargando}>
+          {cargando ? "Verificando..." : "Entrar"}
+        </button>
       </form>
     </div>
   );

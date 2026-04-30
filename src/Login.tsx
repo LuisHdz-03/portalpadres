@@ -1,111 +1,45 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom"; // Importamos el hook de navegación
+import { useNavigate } from "react-router-dom";
+import "./Login.css";
+import logo from "./assets/logoCETIS.png";
 
 export default function Login() {
-  const [user, setUser] = useState("");
-  const [password, setPassword] = useState("");
-  const navigate = useNavigate(); // Inicializamos el hook
+  const [clave, setClave] = useState(""); // Solo guardamos la clave única
+  const navigate = useNavigate();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Aquí podrías agregar validaciones reales con tu API
-    if (user.trim() !== "" && password.trim() !== "") {
-      // Guardamos la bandera de autenticación
+    // Validamos únicamente que la clave no esté vacía
+    if (clave.trim() !== "") {
       localStorage.setItem("autenticado", "1");
 
-      // Redirigimos a la ruta protegida /app
-      // El RouterApp se encargará de dejarte pasar porque ahora "autenticado" es 1
+      // Opcional: Puedes guardar la clave por si la necesitas en el Dashboard
+      // localStorage.setItem("clave_alumno", clave);
+
       navigate("/app", { replace: true });
     } else {
-      alert("Por favor, ingresa tus credenciales");
+      alert("Por favor, ingresa la clave del alumno");
     }
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-        backgroundColor: "#691c32", // Guinda institucional
-      }}
-    >
-      <form
-        onSubmit={handleLogin}
-        style={{
-          background: "white",
-          padding: "2rem",
-          borderRadius: "8px",
-          textAlign: "center",
-          boxShadow: "0 4px 15px rgba(0,0,0,0.2)",
-          width: "320px",
-        }}
-      >
-        <h2
-          style={{
-            color: "#691c32",
-            marginBottom: "1.5rem",
-            fontSize: "1.5rem",
-          }}
-        >
-          Portal de Padres
-        </h2>
+    <div className="login-bg">
+      <form className="login-form" onSubmit={handleLogin}>
+        {/* Etiqueta para el logo. Si usas el import de arriba, cambia la ruta estática por {logoCetis} */}
+        <img src={logo} alt="Logo Institucional" className="login-logo" />
+
+        <h2>Portal CETIS No. 27</h2>
 
         <input
           type="text"
-          placeholder="Usuario / CURP"
+          placeholder="Clave única del alumno"
           required
-          style={{
-            display: "block",
-            margin: "12px auto",
-            padding: "10px",
-            width: "100%",
-            borderRadius: "4px",
-            border: "1px solid #ccc",
-          }}
-          onChange={(e) => setUser(e.target.value)}
+          value={clave}
+          onChange={(e) => setClave(e.target.value)}
         />
 
-        <input
-          type="password"
-          placeholder="Contraseña"
-          required
-          style={{
-            display: "block",
-            margin: "12px auto",
-            padding: "10px",
-            width: "100%",
-            borderRadius: "4px",
-            border: "1px solid #ccc",
-          }}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-
-        <button
-          type="submit"
-          style={{
-            backgroundColor: "#691c32",
-            color: "white",
-            border: "none",
-            padding: "12px 20px",
-            cursor: "pointer",
-            borderRadius: "4px",
-            width: "100%",
-            fontWeight: "bold",
-            marginTop: "10px",
-            transition: "background 0.3s",
-          }}
-          onMouseOver={(e) =>
-            (e.currentTarget.style.backgroundColor = "#4d1425")
-          }
-          onMouseOut={(e) =>
-            (e.currentTarget.style.backgroundColor = "#691c32")
-          }
-        >
-          Entrar
-        </button>
+        <button type="submit">Entrar</button>
       </form>
     </div>
   );

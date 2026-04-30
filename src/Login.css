@@ -1,0 +1,102 @@
+/* --- FONDO GENERAL --- */
+.login-bg {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+
+  /* El linear-gradient pone una capa semi-transparente guinda y negra sobre la imagen */
+  background:
+    linear-gradient(rgba(105, 28, 50, 0.3), rgba(0, 0, 0, 0.8)),
+    url("../src/assets/fondoLogin.png");
+
+  /* Ajustes para que la imagen se adapte perfectamente a la pantalla */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* --- LOGOTIPO --- */
+.login-logo {
+  width: 150px;
+  height: auto;
+  margin: 0 auto 10px auto;
+  display: block;
+}
+
+/* --- CONTENEDOR DEL FORMULARIO --- */
+.login-form {
+  background: white;
+  padding: 4.5rem;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+
+  /* Ajustes para que sea Responsive (adaptable a celulares) */
+  width: 90%;
+  max-width: 580px;
+  box-sizing: border-box;
+}
+
+/* --- TÍTULO --- */
+.login-form h2 {
+  color: #691c32;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+/* --- CAJA DE TEXTO (INPUT) --- */
+.login-form input {
+  display: block;
+  margin: 15px auto;
+  padding: 12px;
+  width: 100%;
+  border-radius: 20px; /* Bordes muy redondeados */
+  border: 2px solid #691c32; /* Borde guinda institucional */
+  text-align: center;
+  letter-spacing: 2px;
+  font-size: 1.2rem; /* Texto más grande y legible */
+  outline: none;
+  transition: all 0.3s ease;
+  box-sizing: border-box; /* Evita que el input se salga del formulario */
+}
+
+/* Efecto al hacer clic para escribir en el Input */
+.login-form input:focus {
+  border-color: #4d1425;
+  box-shadow: 0 0 8px rgba(105, 28, 50, 0.4);
+}
+
+/* --- BOTÓN DE ENTRAR --- */
+.login-form button {
+  background-color: #691c32;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  cursor: pointer;
+  border-radius: 10px; /* Bordes ligeramente redondeados */
+  width: 100%;
+  font-weight: bold;
+  margin-top: 20px;
+  transition: background 0.3s;
+  font-size: 1.1rem;
+}
+
+/* Efecto al pasar el mouse por el Botón */
+.login-form button:hover {
+  background-color: #4d1425; /* Tono guinda más oscuro */
+}
+
+@media (max-width: 600px) {
+  .login-form {
+    padding: 2rem; /* Reduce el relleno interno gigante en pantallas pequeñas */
+  }
+
+  .login-logo {
+    width: 120px;
+  }
+
+  .login-form input {
+    font-size: 1.1rem;
+  }
+}

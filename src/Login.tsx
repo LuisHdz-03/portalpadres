@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginPadreAPI } from "./api/portal"; // Importamos la conexión
+import { loginPadreAPI } from "./api/portal";
 import "./Login.css";
 
 export default function Login() {

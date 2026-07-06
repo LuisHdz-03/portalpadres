@@ -1,5 +1,6 @@
 // src/App.tsx
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Menu,
   X,
@@ -18,6 +19,7 @@ import "./App.css";
 import type { EstatusData } from "./types";
 
 function App() {
+  const navigate = useNavigate();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [vistaActual, setVistaActual] = useState("inicio");
   const [materiaSeleccionada, setMateriaSeleccionada] = useState("Todas");
@@ -33,7 +35,7 @@ function App() {
 
   const handleLogout = () => {
     localStorage.clear();
-    window.location.href = "/login";
+    navigate("/login", { replace: true });
   };
 
   useEffect(() => {

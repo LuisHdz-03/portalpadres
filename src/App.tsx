@@ -11,6 +11,7 @@ import {
   ArrowLeft,
   CalendarDays,
   UserCheck,
+  LogOut,
 } from "lucide-react";
 import { getEstatusCompletoAPI } from "./api/portal";
 import "./App.css";
@@ -19,6 +20,7 @@ import type { EstatusData } from "./types";
 function App() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [vistaActual, setVistaActual] = useState("inicio");
+  const [materiaSeleccionada, setMateriaSeleccionada] = useState("Todas");
 
   const [cargando, setCargando] = useState(true);
   const [estatus, setEstatus] = useState<EstatusData | null>(null);
@@ -97,6 +99,23 @@ function App() {
     (a) => a.tipo === "ENTRADA",
   );
   const ultimoAccesoSalida = accesosOrdenados.find((a) => a.tipo === "SALIDA");
+  const materiasAlumno = Array.from(
+    new Set((estatus?.asistencias || []).map((asistencia) => asistencia.materia)),
+  ).sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" }));
+  const asistenciasFiltradas = (estatus?.asistencias || []).filter(
+    (asistencia) =>
+      materiaSeleccionada === "Todas" ||
+      asistencia.materia === materiaSeleccionada,
+  );
+
+  useEffect(() => {
+    if (
+      materiaSeleccionada !== "Todas" &&
+      !materiasAlumno.includes(materiaSeleccionada)
+    ) {
+      setMateriaSeleccionada("Todas");
+    }
+  }, [materiaSeleccionada, materiasAlumno]);
 
   return (
     <div className="app-container">
@@ -111,8 +130,9 @@ function App() {
           <h1 className="header-title">CETIS No. 27 - Portal de Padres</h1>
         </div>
 
-        <button onClick={handleLogout} className="btn-logout">
-          Cerrar Sesión
+        <button onClick={handleLogout} className="btn-logout" aria-label="Cerrar sesión">
+          <LogOut size={18} />
+          <span className="btn-logout-text">Cerrar Sesión</span>
         </button>
       </header>
 
@@ -259,6 +279,27 @@ function App() {
                 Historial de asistencias registradas por los docentes.
               </p>
 
+              {!cargando && materiasAlumno.length > 0 && (
+                <div className="attendance-filter-bar">
+                  <label className="attendance-filter-label" htmlFor="materia">
+                    Filtrar por materia
+                  </label>
+                  <select
+                    id="materia"
+                    className="attendance-filter-select"
+                    value={materiaSeleccionada}
+                    onChange={(e) => setMateriaSeleccionada(e.target.value)}
+                  >
+                    <option value="Todas">Todas las materias</option>
+                    {materiasAlumno.map((materia) => (
+                      <option key={materia} value={materia}>
+                        {materia}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
               <div className="content-box table-responsive">
                 {cargando ? (
                   <p>Cargando asistencias...</p>
@@ -272,16 +313,16 @@ function App() {
                       </tr>
                     </thead>
                     <tbody>
-                      {estatus.asistencias.map((asistencia) => (
+                      {asistenciasFiltradas.map((asistencia) => (
                         <tr key={asistencia.idAsistencia}>
-                          <td>
+                          <td data-label="Fecha">
                             <div className="info-label">
                               <CalendarDays size={16} />
                               {formatearFecha(asistencia.fecha)}
                             </div>
                           </td>
-                          <td>{asistencia.materia}</td>
-                          <td>
+                          <td data-label="Materia">{asistencia.materia}</td>
+                          <td data-label="Estatus">
                             <span
                               className={
                                 asistencia.estatus === "PRESENTE"
@@ -296,6 +337,8 @@ function App() {
                       ))}
                     </tbody>
                   </table>
+                ) : materiaSeleccionada !== "Todas" ? (
+                  <p>No hay asistencias registradas para esa materia.</p>
                 ) : (
                   <p>No hay registros de asistencias disponibles.</p>
                 )}
@@ -433,13 +476,13 @@ function App() {
                     <tbody>
                       {accesosOrdenados.map((acceso) => (
                         <tr key={acceso.idAcceso}>
-                          <td>
+                          <td data-label="Fecha">
                             <div className="info-label">
                               <CalendarDays size={16} />
                               {formatearFechaHora(acceso.fechaHora)}
                             </div>
                           </td>
-                          <td>
+                          <td data-label="Tipo">
                             <span className={getAccesoClass(acceso.tipo)}>
                               {acceso.tipo}
                             </span>

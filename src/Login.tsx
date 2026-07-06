@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginPadreAPI } from "./api/portal";
 import "./Login.css";
+import logoCETIS from "./assets/logoCETIS.png";
 
 export default function Login() {
   const [clave, setClave] = useState("");
@@ -40,7 +41,7 @@ export default function Login() {
     <div className="login-bg">
       <form className="login-form" onSubmit={handleLogin}>
         <img
-          src="../src/assets/logoCetis.png"
+          src={logoCETIS}
           alt="Logo Institucional"
           className="login-logo"
         />

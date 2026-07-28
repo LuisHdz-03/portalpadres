@@ -2,6 +2,7 @@
 import { useState, useMemo } from "react";
 import { ArrowLeft, CalendarDays, ChevronDown, ChevronUp } from "lucide-react";
 import type { Asistencia } from "../types";
+import "../styles/Asistencias.css";
 
 interface Props {
   asistencias: Asistencia[];

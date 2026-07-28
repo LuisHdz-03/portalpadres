@@ -1,0 +1,70 @@
+.materias-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.materia-card {
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.materia-card-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 18px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.materia-card-titulo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 160px;
+}
+
+.materia-card-titulo h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.materia-porcentaje {
+  font-weight: 600;
+  color: #691c32;
+}
+
+.materia-card-resumen {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+  flex: 1;
+}
+
+.resumen-presente {
+  color: #16a34a;
+}
+.resumen-retardo {
+  color: #d97706;
+}
+.resumen-falta {
+  color: #dc2626;
+}
+
+.materia-card-detalle {
+  border-top: 1px solid #e5e5e5;
+  padding: 8px 18px 14px;
+}
+
+.status-retardo {
+  color: #d97706;
+  font-weight: 600;
+}

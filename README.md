@@ -1,73 +1,39 @@
-# React + TypeScript + Vite
+# Portal de Padres de Familia - CETIS 27
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+El portal web oficial del ecosistema digital del CETIS 27, diseñado específicamente para los padres de familia y tutores del plantel. Esta aplicación cliente permite una consulta ágil, clara y segura del estatus escolar, reportes de incidencias y visualización de datos de los estudiantes, garantizando una comunicación transparente entre la institución y el hogar.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Características Principales
 
-## React Compiler
+*   **Consulta de Estatus en Tiempo Real:** Interfaz intuitiva diseñada para que los tutores supervisen de manera rápida la información del alumno.
+*   **Visualización de Reportes e Incidencias:** Módulo dedicado para dar seguimiento a las incidencias registradas en el plantel por el personal administrativo.
+*   **Enfoque de Accesibilidad y UX:** Diseño limpio y responsivo adaptado para un público general, facilitando la navegación tanto en dispositivos móviles como en computadoras de escritorio.
+*   **Despliegue Continuo (CI/CD):** Configuración lista para entornos de producción en la nube mediante optimizaciones de enrutamiento y rendimiento.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## Stack Tecnológico
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+*   **Frontend Core:** React.js
+*   **Herramienta de Construcción (Build Tool):** Vite (Garantizando un entorno de desarrollo ultra rápido y compilaciones optimizadas)
+*   **Lenguaje:** TypeScript (Tipado estricto para evitar errores en producción)
+*   **Despliegue:** Vercel (`vercel.json`)
+*   **Calidad de Código:** ESLint & Prettier
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Estructura del Portal Cliente
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+El proyecto se mantiene ligero y enfocado exclusivamente en las necesidades del usuario final (el tutor):
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+```text
+portalpadres/
+├── public/                 # Recursos estáticos (Logotipos institucionales e iconos)
+├── src/                    # Código fuente principal de la aplicación
+│   ├── app/               # Vistas principales y componentes de navegación
+│   ├── components/        # Componentes UI reutilizables y formularios (Login, Cards)
+│   └── main.tsx           # Punto de entrada de la aplicación React
+├── index.html              # Plantilla base HTML5
+├── vercel.json            # Configuración de redirecciones y despliegue para Vercel
+└── vite.config.ts         # Configuración del empaquetador Vite

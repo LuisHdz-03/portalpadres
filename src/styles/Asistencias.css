@@ -185,10 +185,10 @@
   content: "✕";
 }
 
-/* =========================================================
-   MÓVIL: la tabla de detalle se convierte en lista de tarjetas,
-   mucho más fácil de leer que columnas angostas en pantalla chica
-   ========================================================= */
+.asistencias-subtext {
+  margin-bottom: 28px;
+}
+
 @media (max-width: 640px) {
   .materia-card-titulo h3 {
     font-size: 1.05rem;

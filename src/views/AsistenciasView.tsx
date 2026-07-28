@@ -79,8 +79,8 @@ export default function AsistenciasView({
       <button className="btn-back" onClick={onVolver}>
         <ArrowLeft size={18} /> Volver al inicio
       </button>
-      <h2 className="welcome-text py-3">Detalle de Asistencias</h2>
-      <p className="welcome-subtext">
+      <h2 className="welcome-text">Detalle de Asistencias</h2>
+      <p className="welcome-subtext asistencias-subtext">
         Historial de asistencias registradas por los docentes, agrupado por
         materia.
       </p>

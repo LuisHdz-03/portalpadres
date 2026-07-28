@@ -1,4 +1,3 @@
-// src/App.tsx
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -9,63 +8,122 @@ import {
   CalendarCheck,
   AlertTriangle,
   DoorOpen,
-  ArrowLeft,
-  CalendarDays,
-  UserCheck,
   LogOut,
 } from "lucide-react";
-import { getEstatusCompletoAPI } from "./api/portal";
+
+import {
+  getResumenAlumnoAPI,
+  getAsistenciasAlumnoAPI,
+  getReportesAlumnoAPI,
+  getAccesosAlumnoAPI,
+} from "./api/portal";
+
 import AsistenciasView from "./views/AsistenciasView";
+import ReportesView from "./views/ReportesView";
+import RegistrosView from "./views/RegistrosView";
+
 import "./App.css";
-import type { EstatusData } from "./types";
 
 function App() {
   const navigate = useNavigate();
+
   const [isCollapsed, setIsCollapsed] = useState(false);
+
   const [vistaActual, setVistaActual] = useState("inicio");
 
   const [cargando, setCargando] = useState(true);
-  const [estatus, setEstatus] = useState<EstatusData | null>(null);
+
+  // ============================
+  // DATOS SEPARADOS
+  // ============================
+
+  const [resumen, setResumen] = useState<any>(null);
+
+  const [asistencias, setAsistencias] = useState<any[]>([]);
+
+  const [reportes, setReportes] = useState<any[]>([]);
+
+  const [accesos, setAccesos] = useState<any[]>([]);
+
+  const [paginacionAccesos, setPaginacionAccesos] = useState<any>(null);
 
   const token = localStorage.getItem("tokenPadre") || "";
+
   const alumnoGuardado = localStorage.getItem("alumnoData");
+
   const alumno = alumnoGuardado
     ? JSON.parse(alumnoGuardado)
-    : { id: 0, nombre: "Cargando...", grupo: "Cargando..." };
+    : {
+        id: 0,
+        nombre: "Cargando...",
+        grupo: "Cargando...",
+      };
 
   const handleLogout = () => {
     localStorage.clear();
-    navigate("/login", { replace: true });
+
+    navigate("/login", {
+      replace: true,
+    });
   };
+
+  // ============================
+  // CARGAR DATOS
+  // ============================
 
   useEffect(() => {
     const cargarDatos = async () => {
-      if (alumno.id && token) {
-        try {
-          const dataEstatus = await getEstatusCompletoAPI(alumno.id, token);
-          setEstatus(dataEstatus);
-        } catch (error) {
-          console.error("Error al cargar los datos del estatus:", error);
-        } finally {
-          setCargando(false);
-        }
+      if (!alumno.id || !token) {
+        setCargando(false);
+        return;
+      }
+
+      try {
+        const [resumenData, asistenciasData, reportesData, accesosData] =
+          await Promise.all([
+            getResumenAlumnoAPI(alumno.id, token),
+
+            getAsistenciasAlumnoAPI(alumno.id, token),
+
+            getReportesAlumnoAPI(alumno.id, token),
+
+            getAccesosAlumnoAPI(alumno.id, token, 1, 10),
+          ]);
+
+        setResumen(resumenData.resumen);
+
+        setAsistencias(asistenciasData.asistencias || []);
+
+        setReportes(reportesData.reportes || []);
+
+        setAccesos(accesosData.accesos || []);
+
+        setPaginacionAccesos(accesosData.paginacion || null);
+      } catch (error) {
+        console.error("Error cargando portal:", error);
+      } finally {
+        setCargando(false);
       }
     };
+
     cargarDatos();
   }, [alumno.id, token]);
 
-  // Formateador de fechas
-  const formatearFecha = (fechaISO: string) => {
-    const fecha = new Date(fechaISO);
-    return fecha.toLocaleDateString("es-MX", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
+  const cambiarPaginaAccesos = async (pagina: number) => {
+    try {
+      const data = await getAccesosAlumnoAPI(alumno.id, token, pagina, 10);
+
+      setAccesos(data.accesos || []);
+
+      setPaginacionAccesos(data.paginacion || null);
+    } catch (error) {
+      console.error("Error cambiando página de accesos:", error);
+    }
   };
 
   const formatearFechaHora = (fechaISO: string) => {
     const fecha = new Date(fechaISO);
+
     return fecha.toLocaleString("es-MX", {
       year: "numeric",
       month: "short",
@@ -76,30 +134,14 @@ function App() {
     });
   };
 
-  // Asignar color dinámico a la etiqueta de nivel del reporte
-  const getBadgeClass = (nivel: string) => {
-    const n = nivel.toLowerCase();
-    if (n.includes("leve")) return "badge-leve";
-    if (n.includes("moderado") || n.includes("medio")) return "badge-moderado";
-    if (n.includes("grave") || n.includes("alto")) return "badge-grave";
-    return "badge-default";
-  };
-
-  const getAccesoClass = (tipo: string) => {
-    const tipoNormalizado = tipo.toLowerCase();
-    if (tipoNormalizado.includes("entrada")) return "status-entrada";
-    if (tipoNormalizado.includes("salida")) return "status-salida";
-    return "status-default";
-  };
-
-  const accesosOrdenados = [...(estatus?.accesos || [])].sort(
+  const accesosOrdenados = [...accesos].sort(
     (a, b) => new Date(b.fechaHora).getTime() - new Date(a.fechaHora).getTime(),
   );
 
-  // Obtener el último acceso de entrada y salida
   const ultimoAccesoEntrada = accesosOrdenados.find(
     (a) => a.tipo === "ENTRADA",
   );
+
   const ultimoAccesoSalida = accesosOrdenados.find((a) => a.tipo === "SALIDA");
 
   return (
@@ -112,12 +154,14 @@ function App() {
           >
             {isCollapsed ? <Menu size={20} /> : <X size={20} />}
           </button>
+
           <h1 className="header-title">CETIS No. 27 - Portal de Padres</h1>
         </div>
 
-        <button onClick={handleLogout} className="btn-logout" aria-label="Cerrar sesión">
+        <button onClick={handleLogout} className="btn-logout">
           <LogOut size={18} />
-          <span className="btn-logout-text">Cerrar Sesión</span>
+
+          <span>Cerrar Sesión</span>
         </button>
       </header>
 
@@ -125,41 +169,63 @@ function App() {
         <nav className={`app-sidebar ${isCollapsed ? "collapsed" : ""}`}>
           <div className="info-item">
             <strong className="info-label">
-              <User size={18} /> Alumno:
+              <User size={18} />
+              Alumno:
             </strong>
-            <p>{alumno.nombre}</p>
+
+            <p>{resumen?.nombreCompleto || alumno.nombre}</p>
+
             <br />
+
             <strong className="info-label">
-              <Users size={18} /> Grupo:
+              <Users size={18} />
+              Grupo:
             </strong>
-            <p>{alumno.grupo}</p>
+
+            <p>{resumen?.grupo?.nombre || alumno.grupo}</p>
           </div>
+
           <hr className="divider" />
 
           <div className="menu-links">
             <p
-              className={`menu-item ${vistaActual === "inicio" ? "active" : ""}`}
+              className={`menu-item ${
+                vistaActual === "inicio" ? "active" : ""
+              }`}
               onClick={() => setVistaActual("inicio")}
             >
-              <User size={20} /> Inicio
+              <User size={20} />
+              Inicio
             </p>
+
             <p
-              className={`menu-item ${vistaActual === "asistencias" ? "active" : ""}`}
+              className={`menu-item ${
+                vistaActual === "asistencias" ? "active" : ""
+              }`}
               onClick={() => setVistaActual("asistencias")}
             >
-              <CalendarCheck size={20} /> Asistencias
+              <CalendarCheck size={20} />
+              Asistencias
             </p>
+
             <p
-              className={`menu-item ${vistaActual === "reportes" ? "active" : ""}`}
+              className={`menu-item ${
+                vistaActual === "reportes" ? "active" : ""
+              }`}
               onClick={() => setVistaActual("reportes")}
             >
-              <AlertTriangle size={20} /> Reportes
+              <AlertTriangle size={20} />
+              Reportes
             </p>
+
             <p
-              className={`menu-item ${vistaActual === "registros" ? "active" : ""}`}
+              className={`menu-item ${
+                vistaActual === "registros" ? "active" : ""
+              }`}
               onClick={() => setVistaActual("registros")}
             >
-              <DoorOpen size={20} /> Accesos
+              <DoorOpen size={20} />
+              Accesos
             </p>
           </div>
         </nav>
@@ -169,35 +235,33 @@ function App() {
             <>
               <header className="main-header">
                 <h2 className="welcome-text">Estatus Académico</h2>
+
                 <p className="welcome-subtext">
-                  Resumen general del estudiante actualizado al día de hoy.
+                  Resumen general del estudiante.
                 </p>
               </header>
 
               {cargando ? (
-                <div className="content-box">
-                  <p>Cargando información desde el servidor...</p>
-                </div>
+                <div className="content-box">Cargando información...</div>
               ) : (
                 <div className="dashboard-grid">
                   <div className="dashboard-card">
-                    <div className="card-icon">
-                      <CalendarCheck size={40} />
-                    </div>
-                    <h3>Asistencias por Materia</h3>
+                    <CalendarCheck size={40} />
+
+                    <h3>Asistencia</h3>
+
                     <p className="card-data">
-                      {(() => {
-                        const asistencias = estatus?.asistencias || [];
-                        if (asistencias.length === 0) return 100;
-                        const presentes = asistencias.filter(
-                          (a) => a.estatus === "PRESENTE",
-                        ).length;
-                        return Math.round(
-                          (presentes / asistencias.length) * 100,
-                        );
-                      })()}
+                      {asistencias.length
+                        ? Math.round(
+                            (asistencias.filter((a) => a.estatus === "PRESENTE")
+                              .length /
+                              asistencias.length) *
+                              100,
+                          )
+                        : 100}
                       %
                     </p>
+
                     <button
                       className="card-btn"
                       onClick={() => setVistaActual("asistencias")}
@@ -207,13 +271,12 @@ function App() {
                   </div>
 
                   <div className="dashboard-card">
-                    <div className="card-icon">
-                      <AlertTriangle size={40} />
-                    </div>
-                    <h3>Reportes Disciplinarios</h3>
-                    <p className="card-data">
-                      {estatus?.reportes?.length || 0}
-                    </p>
+                    <AlertTriangle size={40} />
+
+                    <h3>Reportes</h3>
+
+                    <p className="card-data">{reportes.length}</p>
+
                     <button
                       className="card-btn"
                       onClick={() => setVistaActual("reportes")}
@@ -223,22 +286,24 @@ function App() {
                   </div>
 
                   <div className="dashboard-card">
-                    <div className="card-icon">
-                      <DoorOpen size={40} />
-                    </div>
+                    <DoorOpen size={40} />
+
                     <h3>Entrada / Salida</h3>
+
                     <p className="card-data">
-                      Entrada:{" "}
+                      Entrada:
                       {ultimoAccesoEntrada
                         ? formatearFechaHora(ultimoAccesoEntrada.fechaHora)
-                        : "--:--"}
+                        : "--"}
                     </p>
+
                     <p className="card-subdata">
-                      Salida:{" "}
+                      Salida:
                       {ultimoAccesoSalida
                         ? formatearFechaHora(ultimoAccesoSalida.fechaHora)
-                        : "--:--"}
+                        : "--"}
                     </p>
+
                     <button
                       className="card-btn"
                       onClick={() => setVistaActual("registros")}
@@ -253,162 +318,28 @@ function App() {
 
           {vistaActual === "asistencias" && (
             <AsistenciasView
-              asistencias={estatus?.asistencias || []}
+              asistencias={asistencias}
               cargando={cargando}
               onVolver={() => setVistaActual("inicio")}
             />
           )}
 
-          {/* =========================================
-              VISTA 3: REPORTES
-              ========================================= */}
           {vistaActual === "reportes" && (
-            <div>
-              <button
-                className="btn-back"
-                onClick={() => setVistaActual("inicio")}
-              >
-                <ArrowLeft size={18} /> Volver al inicio
-              </button>
-              <h2 className="welcome-text">Historial de Reportes</h2>
-              <p className="welcome-subtext">
-                Registro de incidencias disciplinarias o académicas.
-              </p>
-
-              {cargando ? (
-                <div className="content-box">
-                  <p>Cargando reportes...</p>
-                </div>
-              ) : estatus?.reportes && estatus.reportes.length > 0 ? (
-                <div className="reports-grid">
-                  {estatus.reportes.map((reporte) => (
-                    <div key={reporte.idReporte} className="report-card">
-                      <div className="report-header">
-                        <h3 className="report-title">{reporte.titulo}</h3>
-                        <span
-                          className={`report-badge ${getBadgeClass(reporte.nivel)}`}
-                        >
-                          {reporte.nivel}
-                        </span>
-                      </div>
-
-                      <div className="report-body">
-                        <div className="report-info-grid">
-                          <div className="report-item">
-                            <span className="report-label">Fecha</span>
-                            <span className="report-value info-label">
-                              <CalendarDays size={14} />
-                              {formatearFecha(reporte.fecha)}
-                            </span>
-                          </div>
-                          {reporte.reportadoPor && (
-                            <div className="report-item">
-                              <span className="report-label">
-                                Reportado por
-                              </span>
-                              <span className="report-value info-label">
-                                <UserCheck size={16} /> {reporte.reportadoPor}
-                              </span>
-                            </div>
-                          )}
-                          {reporte.docente !== "Administración" && (
-                            <div className="report-item">
-                              <span className="report-label">Reportó</span>
-                              <span className="report-value info-label">
-                                <UserCheck size={14} />
-                                {reporte.docente}
-                              </span>
-                            </div>
-                          )}
-                          <div className="report-item">
-                            <span className="report-label">Tipo</span>
-                            <span className="report-value">
-                              {reporte.tipoIncidencia}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="report-item">
-                          <span className="report-label">Descripción</span>
-                          <div className="report-desc-box">
-                            <p className="report-desc-text">
-                              {reporte.descripcion}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="report-footer">
-                        <div className="report-item">
-                          <span className="report-label">Estatus</span>
-                          <span className="report-status">
-                            {reporte.estatus}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="content-box">
-                  <p>
-                    Excelente, no hay reportes registrados para este alumno.
-                  </p>
-                </div>
-              )}
-            </div>
+            <ReportesView
+              reportes={reportes}
+              cargando={cargando}
+              onVolver={() => setVistaActual("inicio")}
+            />
           )}
 
-          {/* =========================================
-              VISTA 4: REGISTROS DE ACCESO
-              ========================================= */}
           {vistaActual === "registros" && (
-            <div>
-              <button
-                className="btn-back"
-                onClick={() => setVistaActual("inicio")}
-              >
-                <ArrowLeft size={18} /> Volver al inicio
-              </button>
-              <h2 className="welcome-text">Registro de Accesos</h2>
-              <p className="welcome-subtext">
-                Historial de entradas y salidas del plantel.
-              </p>
-
-              <div className="content-box table-responsive">
-                {cargando ? (
-                  <p>Cargando registros de acceso...</p>
-                ) : accesosOrdenados.length > 0 ? (
-                  <table className="attendance-table">
-                    <thead>
-                      <tr>
-                        <th>Fecha</th>
-                        <th>Tipo</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {accesosOrdenados.map((acceso) => (
-                        <tr key={acceso.idAcceso}>
-                          <td data-label="Fecha">
-                            <div className="info-label">
-                              <CalendarDays size={16} />
-                              {formatearFechaHora(acceso.fechaHora)}
-                            </div>
-                          </td>
-                          <td data-label="Tipo">
-                            <span className={getAccesoClass(acceso.tipo)}>
-                              {acceso.tipo}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                ) : (
-                  <p>No hay registros de acceso disponibles en este momento.</p>
-                )}
-              </div>
-            </div>
+            <RegistrosView
+              accesos={accesos}
+              cargando={cargando}
+              paginacion={paginacionAccesos}
+              cambiarPagina={cambiarPaginaAccesos}
+              onVolver={() => setVistaActual("inicio")}
+            />
           )}
         </main>
       </div>

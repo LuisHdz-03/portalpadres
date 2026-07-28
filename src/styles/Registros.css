@@ -1,0 +1,152 @@
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.pagination-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  border: none;
+
+  /* Guinda principal */
+  background: #691c32;
+
+  color: white;
+
+  padding: 10px 18px;
+
+  border-radius: 10px;
+
+  cursor: pointer;
+
+  font-weight: 600;
+
+  transition:
+    background 0.3s,
+    transform 0.2s;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: #8b2945;
+  transform: translateY(-2px);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Información de página */
+
+.pagination-info {
+  text-align: center;
+
+  font-size: 14px;
+
+  color: #666;
+
+  font-weight: 500;
+}
+
+/* Celda de fecha */
+
+.date-cell {
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  color: #333;
+}
+
+.date-cell svg {
+  color: #691c32;
+}
+
+
+.access-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.access-table th {
+  background-color: #f8f9fa;
+  color: #691c32;
+
+  padding: 12px;
+
+  font-weight: 700;
+
+  border-bottom: 2px solid #691c32;
+}
+
+.access-table td {
+  padding: 12px;
+
+  color: #555;
+
+  border-bottom: 1px solid #eee;
+}
+
+.access-table tr:hover {
+  background-color: #faf4f6;
+}
+
+
+@media (max-width: 700px) {
+  .access-table thead {
+    display: none;
+  }
+
+  .access-table tr {
+    display: block;
+
+    margin-bottom: 15px;
+
+    border-radius: 12px;
+
+    box-shadow: 0 2px 8px rgba(105, 28, 50, 0.12);
+
+    padding: 12px;
+
+    background: white;
+
+    border-left: 4px solid #691c32;
+  }
+
+  .access-table td {
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 10px;
+
+    padding: 10px;
+
+    border: none;
+  }
+
+  .access-table td::before {
+    content: attr(data-label);
+
+    font-weight: bold;
+
+    color: #691c32;
+  }
+
+  .pagination-container {
+    flex-direction: column;
+  }
+
+  .pagination-btn {
+    width: 100%;
+  }
+}

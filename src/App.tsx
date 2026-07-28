@@ -15,6 +15,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { getEstatusCompletoAPI } from "./api/portal";
+import AsistenciasView from "./views/AsistenciasView";
 import "./App.css";
 import type { EstatusData } from "./types";
 
@@ -22,7 +23,6 @@ function App() {
   const navigate = useNavigate();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [vistaActual, setVistaActual] = useState("inicio");
-  const [materiaSeleccionada, setMateriaSeleccionada] = useState("Todas");
 
   const [cargando, setCargando] = useState(true);
   const [estatus, setEstatus] = useState<EstatusData | null>(null);
@@ -101,23 +101,6 @@ function App() {
     (a) => a.tipo === "ENTRADA",
   );
   const ultimoAccesoSalida = accesosOrdenados.find((a) => a.tipo === "SALIDA");
-  const materiasAlumno = Array.from(
-    new Set((estatus?.asistencias || []).map((asistencia) => asistencia.materia)),
-  ).sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" }));
-  const asistenciasFiltradas = (estatus?.asistencias || []).filter(
-    (asistencia) =>
-      materiaSeleccionada === "Todas" ||
-      asistencia.materia === materiaSeleccionada,
-  );
-
-  useEffect(() => {
-    if (
-      materiaSeleccionada !== "Todas" &&
-      !materiasAlumno.includes(materiaSeleccionada)
-    ) {
-      setMateriaSeleccionada("Todas");
-    }
-  }, [materiaSeleccionada, materiasAlumno]);
 
   return (
     <div className="app-container">
@@ -269,83 +252,11 @@ function App() {
           )}
 
           {vistaActual === "asistencias" && (
-            <div>
-              <button
-                className="btn-back"
-                onClick={() => setVistaActual("inicio")}
-              >
-                <ArrowLeft size={18} /> Volver al inicio
-              </button>
-              <h2 className="welcome-text">Detalle de Asistencias</h2>
-              <p className="welcome-subtext">
-                Historial de asistencias registradas por los docentes.
-              </p>
-
-              {!cargando && materiasAlumno.length > 0 && (
-                <div className="attendance-filter-bar">
-                  <label className="attendance-filter-label" htmlFor="materia">
-                    Filtrar por materia
-                  </label>
-                  <select
-                    id="materia"
-                    className="attendance-filter-select"
-                    value={materiaSeleccionada}
-                    onChange={(e) => setMateriaSeleccionada(e.target.value)}
-                  >
-                    <option value="Todas">Todas las materias</option>
-                    {materiasAlumno.map((materia) => (
-                      <option key={materia} value={materia}>
-                        {materia}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
-
-              <div className="content-box table-responsive">
-                {cargando ? (
-                  <p>Cargando asistencias...</p>
-                ) : estatus?.asistencias && estatus.asistencias.length > 0 ? (
-                  <table className="attendance-table">
-                    <thead>
-                      <tr>
-                        <th>Fecha</th>
-                        <th>Materia</th>
-                        <th>Estatus</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {asistenciasFiltradas.map((asistencia) => (
-                        <tr key={asistencia.idAsistencia}>
-                          <td data-label="Fecha">
-                            <div className="info-label">
-                              <CalendarDays size={16} />
-                              {formatearFecha(asistencia.fecha)}
-                            </div>
-                          </td>
-                          <td data-label="Materia">{asistencia.materia}</td>
-                          <td data-label="Estatus">
-                            <span
-                              className={
-                                asistencia.estatus === "PRESENTE"
-                                  ? "status-presente"
-                                  : "status-ausente"
-                              }
-                            >
-                              {asistencia.estatus}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                ) : materiaSeleccionada !== "Todas" ? (
-                  <p>No hay asistencias registradas para esa materia.</p>
-                ) : (
-                  <p>No hay registros de asistencias disponibles.</p>
-                )}
-              </div>
-            </div>
+            <AsistenciasView
+              asistencias={estatus?.asistencias || []}
+              cargando={cargando}
+              onVolver={() => setVistaActual("inicio")}
+            />
           )}
 
           {/* =========================================

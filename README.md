@@ -1,29 +1,39 @@
-# Portal de Padres de Familia - CETIS 27
+# <img src="https://api.iconify.design/ph:users-three-bold.svg?color=%2338C2FF" height="32" valign="middle"/> Portal de Padres de Familia - CETIS 27
 
 El portal web oficial del ecosistema digital del CETIS 27, diseñado específicamente para los padres de familia y tutores del plantel. Esta aplicación cliente permite una consulta ágil, clara y segura del estatus escolar, reportes de incidencias y visualización de datos de los estudiantes, garantizando una comunicación transparente entre la institución y el hogar.
 
 ---
 
-## Características Principales
+## <img src="https://api.iconify.design/ph:image-bold.svg?color=%2338C2FF" height="28" valign="middle"/> Vistas del Portal
+
+
+
+| Acceso Seguro con token | Consulta de Estatus |
+| :---: | :---: |
+| <a href="https://github.com/user-attachments/assets/dd897338-6e9d-45e7-a25f-4a7a242d97cf"><img src="https://github.com/user-attachments/assets/dd897338-6e9d-45e7-a25f-4a7a242d97cf" width="450" alt="Login Padres"></a> | <a href="https://github.com/user-attachments/assets/59934c43-633f-4ee2-8295-23dd10f1c71b"><img src="https://github.com/user-attachments/assets/59934c43-633f-4ee2-8295-23dd10f1c71b" width="450" alt="Vista Estatus"></a> |
+
+---
+
+## <img src="https://api.iconify.design/ph:sparkle-bold.svg?color=%2338C2FF" height="28" valign="middle"/> Características Principales
 
 *   **Consulta de Estatus en Tiempo Real:** Interfaz intuitiva diseñada para que los tutores supervisen de manera rápida la información del alumno.
 *   **Visualización de Reportes e Incidencias:** Módulo dedicado para dar seguimiento a las incidencias registradas en el plantel por el personal administrativo.
 *   **Enfoque de Accesibilidad y UX:** Diseño limpio y responsivo adaptado para un público general, facilitando la navegación tanto en dispositivos móviles como en computadoras de escritorio.
-*   **Despliegue Continuo (CI/CD):** Configuración lista para entornos de producción en la nube mediante optimizaciones de enrutamiento y rendimiento.
+*   **Despliegue Continuo (CI/CD):** Configuración lista para entornos de producción en la nube mediante optimizaciones de enrutamiento y rendimiento (`vercel.json`).
 
 ---
 
-## Stack Tecnológico
+## <img src="https://api.iconify.design/ph:code-bold.svg?color=%2338C2FF" height="28" valign="middle"/> Stack Tecnológico
 
 *   **Frontend Core:** React.js
 *   **Herramienta de Construcción (Build Tool):** Vite (Garantizando un entorno de desarrollo ultra rápido y compilaciones optimizadas)
 *   **Lenguaje:** TypeScript (Tipado estricto para evitar errores en producción)
-*   **Despliegue:** Vercel (`vercel.json`)
+*   **Despliegue:** Vercel 
 *   **Calidad de Código:** ESLint & Prettier
 
 ---
 
-## Estructura del Portal Cliente
+## <img src="https://api.iconify.design/ph:folder-open-bold.svg?color=%2338C2FF" height="28" valign="middle"/> Estructura del Portal Cliente
 
 El proyecto se mantiene ligero y enfocado exclusivamente en las necesidades del usuario final (el tutor):
 
